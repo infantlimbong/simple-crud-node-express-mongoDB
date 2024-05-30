@@ -1,28 +1,36 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const Article = require('./models/article.model')
-const articleRoutes = require('./routes/articles.route')
+const express = require('express');
+const mongoose = require('mongoose');
+const Article = require('./models/article.model');
+const articleRoutes = require('./routes/articles.route');
+const cors = require('cors');
+const dotenv = require('dotenv');
 
-const app = express()
+dotenv.config(); // Load environment variables from .env file
+
+const app = express();
 
 // Middleware
-app.use(express.json())
-app.use(express.urlencoded ({extended: false}))
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // Routes
-app.use("/api/articles", articleRoutes)
+app.use("/api/articles", articleRoutes);
 
 app.get('/', (req, res) => {
-    res.send("Hello from node API")
+    res.send("Hello from node API");
 });
 
-mongoose.connect('mongodb+srv://erajaya:erajaya123@cluster0.ugrqscc.mongodb.net/Node-API?retryWrites=true&w=majority&appName=Cluster0')
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI;
+
+mongoose.connect(MONGODB_URI)
   .then(() => {
-    console.log("Connected to the database!")
-    app.listen(3000, () => {
-        console.log("Server is running on port 3000")
+    console.log("Connected to the database!");
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
     });
   })
-  .catch(() => {
-    console.log("Database connection failed!")
+  .catch((error) => {
+    console.error("Database connection failed!", error);
   });
